@@ -229,3 +229,9 @@ h6::before {
   background-color: #3eb8be;
   border-radius: 8px;
 }
+
+/* 翻页按钮居中 */
+#pagination {
+  width: 100%;
+  margin: auto;
+}
