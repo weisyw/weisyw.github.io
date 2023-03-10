@@ -184,6 +184,10 @@
             
             <tag> Redis </tag>
             
+            <tag> 高性能 </tag>
+            
+            <tag> 高可用 </tag>
+            
             <tag> 缓存 </tag>
             
         </tags>
@@ -246,10 +250,6 @@
             
             <tag> Redis </tag>
             
-            <tag> 高性能 </tag>
-            
-            <tag> 高可用 </tag>
-            
             <tag> 持久化 </tag>
             
         </tags>
@@ -306,9 +306,9 @@
       
         <tags>
             
-            <tag> 锁 </tag>
-            
             <tag> MySQL </tag>
+            
+            <tag> 锁 </tag>
             
             <tag> 索引 </tag>
             
