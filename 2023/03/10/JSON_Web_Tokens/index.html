@@ -1,0 +1,434 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><title>Redis持久化 | 青青草原上的菠萝屋</title><meta name="author" content="ww"><meta name="copyright" content="ww"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="代码地址：https:&#x2F;&#x2F;gitee.com&#x2F;weisyw&#x2F;jwt.git 什么是JWT JSON Web Token (JWT)是⼀个开放标准(RFC 7519)，它定义了⼀种紧凑的、⾃包含的⽅式，⽤于作为JSON对象在各⽅之间安全地传输信息。该信息可以被验证和信任，因为它是数字签名的。jwt可以使用秘密（使用HMAC算法）或使用RSA或ECDSA的公钥&#x2F;私钥对进行签名。 JWT能做什">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis持久化">
+<meta property="og:url" content="https://www.wweicloud.com/2023/03/10/JSON_Web_Tokens/index.html">
+<meta property="og:site_name" content="青青草原上的菠萝屋">
+<meta property="og:description" content="代码地址：https:&#x2F;&#x2F;gitee.com&#x2F;weisyw&#x2F;jwt.git 什么是JWT JSON Web Token (JWT)是⼀个开放标准(RFC 7519)，它定义了⼀种紧凑的、⾃包含的⽅式，⽤于作为JSON对象在各⽅之间安全地传输信息。该信息可以被验证和信任，因为它是数字签名的。jwt可以使用秘密（使用HMAC算法）或使用RSA或ECDSA的公钥&#x2F;私钥对进行签名。 JWT能做什">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog-ww.oss-cn-hangzhou.aliyuncs.com/2023/03/07/c477e45dc4914f04afe50cb015b724cb.jpg/wallHaven.jpg">
+<meta property="article:published_time" content="2023-03-10T08:54:21.866Z">
+<meta property="article:modified_time" content="2023-03-10T09:37:55.949Z">
+<meta property="article:author" content="ww">
+<meta property="article:tag" content="JWT">
+<meta property="article:tag" content="token">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog-ww.oss-cn-hangzhou.aliyuncs.com/2023/03/07/c477e45dc4914f04afe50cb015b724cb.jpg/wallHaven.jpg"><link rel="shortcut icon" href="/img/tx.ico"><link rel="canonical" href="https://www.wweicloud.com/2023/03/10/JSON_Web_Tokens/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":300},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Redis持久化',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-03-10 17:37:55'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/progress_bar.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="/css/custom.css"><link rel="stylesheet" href="/css/background.css"><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-categories-card@1.0.0/lib/categorybar.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Zfour/Butterfly-double-row-display@1.00/cardlistpost.min.css"/>
+<style>#recent-posts > .recent-post-item >.recent-post-info > .article-meta-wrap > .tags:before {content:"\A";
+  white-space: pre;}#recent-posts > .recent-post-item >.recent-post-info > .article-meta-wrap > .tags > .article-meta__separator{display:none}</style>
+<link rel="stylesheet" href="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/clock.min.css" /><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-wowjs/lib/animate.min.css" media="print" onload="this.media='screen'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiperstyle.css" media="print" onload="this.media='all'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (false) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/loading.gif" data-original="/img/tx.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">13</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://blog-ww.oss-cn-hangzhou.aliyuncs.com/2023/03/07/c477e45dc4914f04afe50cb015b724cb.jpg/wallHaven.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="青青草原上的菠萝屋"><span class="site-name">青青草原上的菠萝屋</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Redis持久化</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-03-10T08:54:21.866Z" title="发表于 2023-03-10 16:54:21">2023-03-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-03-10T09:37:55.949Z" title="更新于 2023-03-10 17:37:55">2023-03-10</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Java/">Java</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">3.1k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>12分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Redis持久化"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>代码地址：<a target="_blank" rel="noopener" href="https://gitee.com/weisyw/jwt.git">https://gitee.com/weisyw/jwt.git</a></p>
+<h2 id="什么是JWT"><a href="#什么是JWT" class="headerlink" title="什么是JWT"></a>什么是JWT</h2><p> JSON Web Token (JWT)是⼀个开放标准(RFC 7519)，它定义了⼀种紧凑的、⾃包含的⽅式，⽤于作为JSON对象在各⽅之间安全地传输信息。该信息可以被验证和信任，因为它是数字签名的。jwt可以使用秘密（使用HMAC算法）或使用RSA或ECDSA的公钥&#x2F;私钥对进行签名。</p>
+<h2 id="JWT能做什么"><a href="#JWT能做什么" class="headerlink" title="JWT能做什么"></a>JWT能做什么</h2><h3 id="授权"><a href="#授权" class="headerlink" title="授权"></a>授权</h3><p>这是使⽤JWT的最常⻅场景。⼀旦⽤⼾登录，后续每个请求都将包含 JWT，允许⽤⼾访问该令牌允许的路由、服务和资源。单点登录是现在⼴泛使⽤的JWT的⼀个特性，因为它的开销很⼩，并且可以轻松地跨域使⽤。  </p>
+<h3 id="信息交换"><a href="#信息交换" class="headerlink" title="信息交换"></a>信息交换</h3><p>JSON Web Token是在各方之间安全地传输信息的好方法。因为可以对JWT进行签名（例如，使用公钥&#x2F;私钥对），所以您可以确保发件人是他们所说的人。此外，由于签名是使用标头和有效负载计算的，因此您还可以验证内容是否遭到篡改。</p>
+<h2 id="为什么是JWT"><a href="#为什么是JWT" class="headerlink" title="为什么是JWT"></a>为什么是JWT</h2><h3 id="基于传统的Session认证"><a href="#基于传统的Session认证" class="headerlink" title="基于传统的Session认证"></a>基于传统的Session认证</h3><h4 id="认证方式"><a href="#认证方式" class="headerlink" title="认证方式"></a>认证方式</h4><p>http协议本身是一种无状态的协议，而这就意味着如果用户向我们的应用提供了用户名和密码来进行用户认证，那么下一次请求时，用户还要再一次进行用户认证才行，因为根据http协议，我们并不能知道是哪个用户发出的请求，所以为了让我们的应用能识别是哪个用户发出的请求，我们只能在服务器存储一份用户登录的信息，这份登录信息会在响应时传递给浏览器，告诉其保存为cookie,以便下次请求时发送给我们的应用，这样我们的应用就能识别请求来自哪个用户了,这就是传统的基于session认证。</p>
+<h4 id="认证流程"><a href="#认证流程" class="headerlink" title="认证流程"></a>认证流程</h4><p><img src="/img/loading.gif" data-original="https://picture-20221025.oss-cn-hangzhou.aliyuncs.com/img/image-20230227214034794.png" alt="image-20230227214034794"></p>
+<h4 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h4><ol>
+<li>每个用户经过我们的应用认证之后，我们的应用都要在服务端做一次记录，以方便用户下次请求的鉴别，通常而言session都是保存在内存中，而随着认证用户的增多，服务端的开销会明显增大；</li>
+<li>用户认证之后，服务端做认证记录，如果认证的记录被保存在内存中的话，这意味着用户下次请求还必须要请求在这台服务器上,这样才能拿到授权的资源，这样在分布式的应用上，相应的限制了负载均衡器的能力。这也意味着限制了应用的扩展能力；</li>
+<li>因为是基于cookie来进行用户识别的, cookie如果被截获，用户就会很容易受到跨站请求伪造的攻击；</li>
+<li>在前后端分离系统中就更加痛苦，也就是说前后端分离在应用解耦后增加了部署的复杂性。通常用户一次请求就要转发多次。如果用session 每次携带sessionid 到服务	器，服务器还要查询用户信息。同时如果用户很多。这些信息存储在服务器内存中，给服务器增加负担。还有就是CSRF（跨站伪造请求攻击）攻击，session是基于cookie进行用户识别的, cookie如果被截获，用户就会很容易受到跨站请求伪造的攻击。还有就是sessionid就是一个特征值，表达的信息不够丰富。不容易扩展。而且如果你后端应用是多节点部署。那么就需要实现session共享机制。	不方便集群应用。</li>
+</ol>
+<h3 id="基于JWT认证"><a href="#基于JWT认证" class="headerlink" title="基于JWT认证"></a>基于JWT认证</h3><h4 id="认证流程-1"><a href="#认证流程-1" class="headerlink" title="认证流程"></a>认证流程</h4><ol>
+<li>首先，前端通过Web表单将自己的用户名和密码发送到后端的接口。这一过程一般是一个HTTP POST请求。建议的方式是通过SSL加密的传输（https协议），从而避免敏感信息被嗅探。后端核对用户名和密码成功后，将用户的id等其他信息作为JWT Payload（负载），将其与头部分别进行Base64编码拼接后签名，形成一个JWT(Token)。形成的JWT就是一个形同xxx.yyy.zzz的字符串；</li>
+<li>后端将JWT字符串作为登录成功的返回结果返回给前端。前端可以将返回的结果保存在localStorage或sessionStorage上，退出登录时前端删除保存的JWT即可；</li>
+<li>前端在每次请求时将JWT放入HTTP Header中的Authorization位。(解决XSS和XSRF问题) HEADER；</li>
+<li>后端检查是否存在，如存在验证JWT的有效性。例如，检查签名是否正确；检查Token是否过期；检查Token的接收方是否是自己（可选）；</li>
+<li>验证通过后后端使用JWT中包含的用户信息进行其他逻辑操作，返回相应结果。</li>
+</ol>
+<p><img src="/img/loading.gif" data-original="https://picture-20221025.oss-cn-hangzhou.aliyuncs.com/img/image-20230227214055844.png" alt="image-20230227214055844"></p>
+<h4 id="JWT的优势"><a href="#JWT的优势" class="headerlink" title="JWT的优势"></a>JWT的优势</h4><ol>
+<li>简洁(Compact)：可以通过URL，POST参数或者在HTTP header发送，因为数据量小，传输速度也很快；</li>
+<li>自包含(Self-contained)：负载中包含了所有用户所需要的信息，避免了多次查询数据库；</li>
+<li>因为Token是以JSON加密的形式保存在客户端的，所以JWT是跨语言的，原则上任何web形式都支持；</li>
+<li>不需要在服务端保存会话信息，特别适用于分布式微服务。</li>
+</ol>
+<h2 id="JWT的结构"><a href="#JWT的结构" class="headerlink" title="JWT的结构"></a>JWT的结构</h2><h3 id="令牌组成"><a href="#令牌组成" class="headerlink" title="令牌组成"></a>令牌组成</h3><ul>
+<li>标头(Header)</li>
+<li>有效载荷(Payload)</li>
+<li>签名(Signature)</li>
+</ul>
+<p><img src="/img/loading.gif" data-original="https://picture-20221025.oss-cn-hangzhou.aliyuncs.com/img/image-20230227214220175.png" alt="image-20230227214220175"><br>通常是一个类似于xxx.yyy.zzz的字符串组成</p>
+<h3 id="Header"><a href="#Header" class="headerlink" title="Header"></a>Header</h3><p>标头通常由两部分组成：令牌的类型（即JWT）和所使用的签名算法，例如HMAC SHA256或RSA。它会使用 Base64 编码组成 JWT 结构的第一部分。</p>
+<blockquote>
+<p>注意:Base64是一种编码，也就是说，它是可以被翻译回原来的样子来的。它并不是一种加密过程。</p>
+</blockquote>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;alg&quot;</span><span class="punctuation">:</span><span class="string">&quot;HS256&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;typ&quot;</span><span class="punctuation">:</span><span class="string">&quot;JWT&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Payload"><a href="#Payload" class="headerlink" title="Payload"></a>Payload</h3><p>令牌的第二部分是有效负载，其中包含声明。声明是有关实体（通常是用户）和其他数据的声明。同样的，它会使用 Base64 编码组成 JWT 结构的第二部分。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;sub&quot;</span><span class="punctuation">:</span> <span class="string">&quot;123&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;张三&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;admin&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Signature"><a href="#Signature" class="headerlink" title="Signature"></a>Signature</h3><p>header和payload都是使用 Base64 进行编码的，即前端可以解开知道里面的信息。Signature 需要使用编码后的 header 和 payload 以及我们提供的一个密钥(盐)，然后使用 header 中指定的签名算法（HS256）进行签名。签名的作用是保证 JWT 没有被篡改过。中间用 . 隔开。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HMACSHA256(base64UrlEncode(header) + &quot;.&quot; + base64UrlEncode(payload),secret);</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>签名目的</strong><br>最后一步签名的过程，实际上是对头部以及负载内容进行签名，防止内容被窜改。如果有人对头部以及负载的内容解码之后进行修改，再进行编码，最后加上之前的签名组合形成新的JWT的话，那么服务器端会判断出新的头部和负载形成的签名和JWT附带上的签名是不一样的。如果要对新的头部和负载进行签名，在不知道服务器加密时用的密钥的话，得出来的签名也是不一样的。</p>
+<p><strong>信息安全问题</strong><br>在JWT中，不应该在负载里面加入任何敏感的数据。在上面的例子中，我们传输的是用户的普通信息。这个值实际上不是什么敏感内容，一般情况下被知道也是安全的。但是像密码这样的内容就不能被放在JWT中了。如果将用户的密码放在了JWT中，那么怀有恶意的第三方通过Base64解码就能很快地知道你的密码了。因此JWT适合用于向Web应用传递一些非敏感信息。JWT还经常用于设计用户认证和授权系统，甚至实现Web应用的单点登录。</p>
+<h3 id="结合"><a href="#结合" class="headerlink" title="结合"></a>结合</h3><p>输出是三个由点分隔的Base64-URL字符串，可以在HTML和HTTP环境中轻松传递这些字符串，与基于XML的标准（例如SAML）相比，它更紧凑。</p>
+<h2 id="使用JWT"><a href="#使用JWT" class="headerlink" title="使用JWT"></a>使用JWT</h2><ol>
+<li>引入依赖</li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.auth0<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>java-jwt<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.4.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>生成token</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">contextLoads</span><span class="params">()</span> &#123;</span><br><span class="line">    HashMap&lt;String, Object&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">    <span class="type">Calendar</span> <span class="variable">instance</span> <span class="operator">=</span> Calendar.getInstance();</span><br><span class="line">    instance.add(Calendar.SECOND, <span class="number">60</span>);</span><br><span class="line">    <span class="type">String</span> <span class="variable">token</span> <span class="operator">=</span> JWT.create()</span><br><span class="line">        .withHeader(map) <span class="comment">// header</span></span><br><span class="line">        .withClaim(<span class="string">&quot;userId&quot;</span>, <span class="number">1</span>) <span class="comment">// payload</span></span><br><span class="line">        .withClaim(<span class="string">&quot;username&quot;</span>, <span class="string">&quot;张三&quot;</span>)</span><br><span class="line">        .withExpiresAt(instance.getTime()) <span class="comment">// 指定令牌的过期时间</span></span><br><span class="line">        .sign(Algorithm.HMAC256(<span class="string">&quot;1qaz2wsx&quot;</span>));<span class="comment">// 签名</span></span><br><span class="line">    System.out.println(token);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>解析token</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">test</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="comment">// 创建验证对象</span></span><br><span class="line">    <span class="type">JWTVerifier</span> <span class="variable">jwtVerifier</span> <span class="operator">=</span> JWT.require(Algorithm.HMAC256(<span class="string">&quot;1qaz2wsx&quot;</span>)).build();</span><br><span class="line">    <span class="type">DecodedJWT</span> <span class="variable">verify</span> <span class="operator">=</span> jwtVerifier.verify(token);</span><br><span class="line">    System.out.println(verify.getClaim(<span class="string">&quot;userId&quot;</span>).asLong());</span><br><span class="line">    System.out.println(verify.getClaim(<span class="string">&quot;username&quot;</span>).asString());</span><br><span class="line">    System.out.println(<span class="string">&quot;过期时间：&quot;</span> + verify.getExpiresAt());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>常见异常<ol>
+<li>SignatureVerificationException：签名不一致</li>
+<li>TokenExpiredException：令牌过期</li>
+<li>AlgorithmMismatchException：算法不匹配</li>
+<li>InvalidClaimException：payload失效</li>
+</ol>
+</li>
+</ol>
+<h2 id="封装工具类"><a href="#封装工具类" class="headerlink" title="封装工具类"></a>封装工具类</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.ww.jwt_demo.utils;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.auth0.jwt.JWT;</span><br><span class="line"><span class="keyword">import</span> com.auth0.jwt.JWTCreator;</span><br><span class="line"><span class="keyword">import</span> com.auth0.jwt.algorithms.Algorithm;</span><br><span class="line"><span class="keyword">import</span> com.auth0.jwt.interfaces.DecodedJWT;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Calendar;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>: ww</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@DateTime</span>: 2022/7/12 9:01</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>: JWT工具类</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">JWTUtils</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">SING</span> <span class="operator">=</span> <span class="string">&quot;1qaz2wsx&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 生成token</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> map</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> String <span class="title function_">getToken</span><span class="params">(Map&lt;String, String&gt; map)</span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="type">Calendar</span> <span class="variable">instance</span> <span class="operator">=</span> Calendar.getInstance();</span><br><span class="line">        instance.add(Calendar.DATE, <span class="number">3</span>);</span><br><span class="line"></span><br><span class="line">        JWTCreator.<span class="type">Builder</span> <span class="variable">builder</span> <span class="operator">=</span> JWT.create();</span><br><span class="line"></span><br><span class="line">        map.forEach((key, value) -&gt; &#123;</span><br><span class="line">            builder.withClaim(key, value);</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="type">String</span> <span class="variable">token</span> <span class="operator">=</span> builder.withExpiresAt(instance.getTime())</span><br><span class="line">                .sign(Algorithm.HMAC256(SING));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> token;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 验证token合法性 获取token信息</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> token</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> DecodedJWT <span class="title function_">verify</span><span class="params">(String token)</span> &#123;</span><br><span class="line">        <span class="comment">//如果有任何验证异常，此处都会抛出异常</span></span><br><span class="line">        <span class="keyword">return</span> JWT.require(Algorithm.HMAC256(SING)).build().verify(token);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取token信息</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> token</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="comment">//    public static DecodedJWT getTokenInfo(String token)&#123;</span></span><br><span class="line"><span class="comment">//        DecodedJWT verify = JWT.require(Algorithm.HMAC256(SING)).build().verify(token);</span></span><br><span class="line"><span class="comment">//        return verify;</span></span><br><span class="line"><span class="comment">//    &#125;</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="整合SpringBoot"><a href="#整合SpringBoot" class="headerlink" title="整合SpringBoot"></a>整合SpringBoot</h2><h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> IUserService userService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/user/login&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Map&lt;String, Object&gt; <span class="title function_">login</span><span class="params">(User user)</span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;用户名：&#123;&#125; , 密码：&#123;&#125;&quot;</span>,user.getName(),user.getPassword());</span><br><span class="line">        Map&lt;String, Object&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">try</span>&#123;</span><br><span class="line">            <span class="type">User</span> <span class="variable">login</span> <span class="operator">=</span> userService.login(user);</span><br><span class="line">            <span class="comment">// 生成jwt令牌</span></span><br><span class="line">            Map&lt;String, String&gt; payload = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">            payload.put(<span class="string">&quot;id&quot;</span>, login.getId());</span><br><span class="line">            payload.put(<span class="string">&quot;name&quot;</span>, login.getName());</span><br><span class="line">            <span class="type">String</span> <span class="variable">token</span> <span class="operator">=</span> JWTUtils.getToken(payload);</span><br><span class="line">            map.put(<span class="string">&quot;state&quot;</span>, <span class="literal">true</span>);</span><br><span class="line">            map.put(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;认证成功&quot;</span>);</span><br><span class="line">            map.put(<span class="string">&quot;token&quot;</span>, token);</span><br><span class="line">        &#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">            map.put(<span class="string">&quot;state&quot;</span>, <span class="literal">false</span>);</span><br><span class="line">            map.put(<span class="string">&quot;msg&quot;</span>, e.getMessage());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> map;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping(&quot;/user/test&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Map&lt;String, Object&gt; <span class="title function_">test</span><span class="params">(String token)</span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;当前token为：&#123;&#125;&quot;</span>, token);</span><br><span class="line">        Map&lt;String, Object&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">DecodedJWT</span> <span class="variable">verify</span> <span class="operator">=</span> JWTUtils.verify(token);</span><br><span class="line">            map.put(<span class="string">&quot;state&quot;</span>, <span class="literal">true</span>);</span><br><span class="line">            map.put(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;请求成功&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> map;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (SignatureVerificationException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            map.put(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;签名不⼀致&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (TokenExpiredException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            map.put(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;token过期&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (AlgorithmMismatchException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            map.put(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;算法不匹配&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InvalidClaimException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            map.put(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;失效的payload&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            map.put(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;token⽆效&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        map.put(<span class="string">&quot;state&quot;</span>, <span class="literal">false</span>);</span><br><span class="line">        <span class="keyword">return</span> map;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>测试</strong></p>
+<p><img src="/img/loading.gif" data-original="https://picture-20221025.oss-cn-hangzhou.aliyuncs.com/img/image-20230227214307527.png" alt="image-20230227214307527"></p>
+<h3 id="配置拦截器"><a href="#配置拦截器" class="headerlink" title="配置拦截器"></a>配置拦截器</h3><ol>
+<li>创建JWTInterceptor</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.ww.jwt_demo.interceptor;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.auth0.jwt.exceptions.AlgorithmMismatchException;</span><br><span class="line"><span class="keyword">import</span> com.auth0.jwt.exceptions.InvalidClaimException;</span><br><span class="line"><span class="keyword">import</span> com.auth0.jwt.exceptions.SignatureVerificationException;</span><br><span class="line"><span class="keyword">import</span> com.auth0.jwt.exceptions.TokenExpiredException;</span><br><span class="line"><span class="keyword">import</span> com.auth0.jwt.interfaces.DecodedJWT;</span><br><span class="line"><span class="keyword">import</span> com.fasterxml.jackson.databind.ObjectMapper;</span><br><span class="line"><span class="keyword">import</span> com.ww.jwt_demo.utils.JWTUtils;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.servlet.HandlerInterceptor;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletRequest;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletResponse;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>: ww</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@DateTime</span>: 2022/7/12 10:08</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>: This is description of class</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">JWTInterceptor</span> <span class="keyword">implements</span> <span class="title class_">HandlerInterceptor</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">preHandle</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        Map&lt;String, Object&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        <span class="comment">// 获取请求头中的令牌</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">token</span> <span class="operator">=</span> request.getHeader(<span class="string">&quot;token&quot;</span>);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">DecodedJWT</span> <span class="variable">verify</span> <span class="operator">=</span> JWTUtils.verify(token);</span><br><span class="line">            <span class="comment">// 放行</span></span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (SignatureVerificationException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            map.put(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;签名不⼀致&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (TokenExpiredException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            map.put(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;token过期&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (AlgorithmMismatchException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            map.put(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;算法不匹配&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InvalidClaimException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            map.put(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;失效的payload&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            map.put(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;token⽆效&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 设置状态</span></span><br><span class="line">        map.put(<span class="string">&quot;state&quot;</span>, <span class="literal">false</span>);</span><br><span class="line">        <span class="comment">// 将map转为json</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">json</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectMapper</span>().writeValueAsString(map);</span><br><span class="line">        response.setContentType(<span class="string">&quot;application/json;charset=UTF-8&quot;</span>);</span><br><span class="line">        response.getWriter().println(json);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>添加 拦截器</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">InterceptorConfig</span> <span class="keyword">implements</span> <span class="title class_">WebMvcConfigurer</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addInterceptors</span><span class="params">(InterceptorRegistry registry)</span> &#123;</span><br><span class="line">        registry.addInterceptor(<span class="keyword">new</span> <span class="title class_">JWTInterceptor</span>())</span><br><span class="line">                .addPathPatterns(<span class="string">&quot;/user/test&quot;</span>) <span class="comment">// 用户接口放行，其他接口token验证</span></span><br><span class="line">                .excludePathPatterns(<span class="string">&quot;/user/login&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://www.wweicloud.com">ww</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://www.wweicloud.com/2023/03/10/JSON_Web_Tokens/">https://www.wweicloud.com/2023/03/10/JSON_Web_Tokens/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://www.wweicloud.com" target="_blank">青青草原上的菠萝屋</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/JWT/">JWT</a><a class="post-meta__tags" href="/tags/token/">token</a></div><div class="post_share"><div class="social-share" data-image="https://blog-ww.oss-cn-hangzhou.aliyuncs.com/2023/03/07/c477e45dc4914f04afe50cb015b724cb.jpg/wallHaven.jpg" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.jpg" target="_blank"><img class="post-qr-code-img" src="/img/loading.gif" data-original="/img/wechat.jpg" alt="微信"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/loading.gif" data-original="/img/alipay.jpg" alt="支付宝"/></a><div class="post-qr-code-desc">支付宝</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2023/03/10/MyBatis-Plus%E5%85%A5%E9%97%A8(%E4%B8%80)/" title="MyBatis-Plus入门（一）"><img class="cover" src="/img/loading.gif" data-original="https://blog-ww.oss-cn-hangzhou.aliyuncs.com/2023/03/07/c477e45dc4914f04afe50cb015b724cb.jpg/wallhaven-m3lkj1.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">MyBatis-Plus入门（一）</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/loading.gif" data-original="/img/tx.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">ww</div><div class="author-info__description">码一点出路也没有</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">13</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/weisyw"><i class="fab fa-github"></i><span>关注</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/weisyw" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title=""><i class="fab fa-qq"></i></a><a class="social-icon" href="mailto:2644754894@qq.com" target="_blank" title="Email"><i class="fas fa-envelope-open-text"></i></a><a class="social-icon" href="/img/wx.jpg" target="_blank" title=""><i class="fa-brands fa-weixin"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">有问题可以向我提出哦</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFJWT"><span class="toc-number">1.</span> <span class="toc-text">什么是JWT</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JWT%E8%83%BD%E5%81%9A%E4%BB%80%E4%B9%88"><span class="toc-number">2.</span> <span class="toc-text">JWT能做什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%88%E6%9D%83"><span class="toc-number">2.1.</span> <span class="toc-text">授权</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%A1%E6%81%AF%E4%BA%A4%E6%8D%A2"><span class="toc-number">2.2.</span> <span class="toc-text">信息交换</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AFJWT"><span class="toc-number">3.</span> <span class="toc-text">为什么是JWT</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E4%BC%A0%E7%BB%9F%E7%9A%84Session%E8%AE%A4%E8%AF%81"><span class="toc-number">3.1.</span> <span class="toc-text">基于传统的Session认证</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%A4%E8%AF%81%E6%96%B9%E5%BC%8F"><span class="toc-number">3.1.1.</span> <span class="toc-text">认证方式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B"><span class="toc-number">3.1.2.</span> <span class="toc-text">认证流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%97%AE%E9%A2%98"><span class="toc-number">3.1.3.</span> <span class="toc-text">问题</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8EJWT%E8%AE%A4%E8%AF%81"><span class="toc-number">3.2.</span> <span class="toc-text">基于JWT认证</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B-1"><span class="toc-number">3.2.1.</span> <span class="toc-text">认证流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#JWT%E7%9A%84%E4%BC%98%E5%8A%BF"><span class="toc-number">3.2.2.</span> <span class="toc-text">JWT的优势</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JWT%E7%9A%84%E7%BB%93%E6%9E%84"><span class="toc-number">4.</span> <span class="toc-text">JWT的结构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A4%E7%89%8C%E7%BB%84%E6%88%90"><span class="toc-number">4.1.</span> <span class="toc-text">令牌组成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Header"><span class="toc-number">4.2.</span> <span class="toc-text">Header</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Payload"><span class="toc-number">4.3.</span> <span class="toc-text">Payload</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Signature"><span class="toc-number">4.4.</span> <span class="toc-text">Signature</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E5%90%88"><span class="toc-number">4.5.</span> <span class="toc-text">结合</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8JWT"><span class="toc-number">5.</span> <span class="toc-text">使用JWT</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%81%E8%A3%85%E5%B7%A5%E5%85%B7%E7%B1%BB"><span class="toc-number">6.</span> <span class="toc-text">封装工具类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B4%E5%90%88SpringBoot"><span class="toc-number">7.</span> <span class="toc-text">整合SpringBoot</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95"><span class="toc-number">7.1.</span> <span class="toc-text">测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%8B%A6%E6%88%AA%E5%99%A8"><span class="toc-number">7.2.</span> <span class="toc-text">配置拦截器</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2023/03/10/JSON_Web_Tokens/" title="Redis持久化"><img src="/img/loading.gif" data-original="https://blog-ww.oss-cn-hangzhou.aliyuncs.com/2023/03/07/c477e45dc4914f04afe50cb015b724cb.jpg/wallHaven.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Redis持久化"/></a><div class="content"><a class="title" href="/2023/03/10/JSON_Web_Tokens/" title="Redis持久化">Redis持久化</a><time datetime="2023-03-10T08:54:21.866Z" title="发表于 2023-03-10 16:54:21">2023-03-10</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/03/10/MyBatis-Plus%E5%85%A5%E9%97%A8(%E4%B8%80)/" title="MyBatis-Plus入门（一）"><img src="/img/loading.gif" data-original="https://blog-ww.oss-cn-hangzhou.aliyuncs.com/2023/03/07/c477e45dc4914f04afe50cb015b724cb.jpg/wallhaven-m3lkj1.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="MyBatis-Plus入门（一）"/></a><div class="content"><a class="title" href="/2023/03/10/MyBatis-Plus%E5%85%A5%E9%97%A8(%E4%B8%80)/" title="MyBatis-Plus入门（一）">MyBatis-Plus入门（一）</a><time datetime="2023-03-10T05:41:57.218Z" title="发表于 2023-03-10 13:41:57">2023-03-10</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/03/10/MyBatis-Plus%E5%85%B6%E4%BB%96(%E4%BA%94)/" title="MyBatis-Plus其他（五）"><img src="/img/loading.gif" data-original="https://blog-ww.oss-cn-hangzhou.aliyuncs.com/2023/03/07/c477e45dc4914f04afe50cb015b724cb.jpg/wallhaven-we5jlx.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="MyBatis-Plus其他（五）"/></a><div class="content"><a class="title" href="/2023/03/10/MyBatis-Plus%E5%85%B6%E4%BB%96(%E4%BA%94)/" title="MyBatis-Plus其他（五）">MyBatis-Plus其他（五）</a><time datetime="2023-03-10T05:34:42.686Z" title="发表于 2023-03-10 13:34:42">2023-03-10</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/03/10/MyBatis-Plus%E6%8F%92%E4%BB%B6(%E5%9B%9B)/" title="MyBatis-Plus插件（四）"><img src="/img/loading.gif" data-original="https://blog-ww.oss-cn-hangzhou.aliyuncs.com/2023/03/07/c477e45dc4914f04afe50cb015b724cb.jpg/wallhaven-1pk58v.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="MyBatis-Plus插件（四）"/></a><div class="content"><a class="title" href="/2023/03/10/MyBatis-Plus%E6%8F%92%E4%BB%B6(%E5%9B%9B)/" title="MyBatis-Plus插件（四）">MyBatis-Plus插件（四）</a><time datetime="2023-03-10T05:28:20.277Z" title="发表于 2023-03-10 13:28:20">2023-03-10</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/03/10/MyBatis-Plus%E6%9D%A1%E4%BB%B6%E6%9E%84%E9%80%A0%E5%99%A8%E5%92%8C%E5%B8%B8%E7%94%A8%E6%8E%A5%E5%8F%A3(%E4%B8%89)/" title="MyBatis-Plus条件构造器和常用接口（三）"><img src="/img/loading.gif" data-original="https://blog-ww.oss-cn-hangzhou.aliyuncs.com/2023/03/07/c477e45dc4914f04afe50cb015b724cb.jpg/wallhaven-kx7mkm.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="MyBatis-Plus条件构造器和常用接口（三）"/></a><div class="content"><a class="title" href="/2023/03/10/MyBatis-Plus%E6%9D%A1%E4%BB%B6%E6%9E%84%E9%80%A0%E5%99%A8%E5%92%8C%E5%B8%B8%E7%94%A8%E6%8E%A5%E5%8F%A3(%E4%B8%89)/" title="MyBatis-Plus条件构造器和常用接口（三）">MyBatis-Plus条件构造器和常用接口（三）</a><time datetime="2023-03-10T05:14:31.739Z" title="发表于 2023-03-10 13:14:31">2023-03-10</time></div></div></div></div></div></div></main><footer id="footer" style="background: #efefef"><div id="footer-wrap"><div class="copyright">&copy;2023 By ww</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">世上最幸运的事就是喜欢上一个人</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button><button id="go-down" type="button" title="直达底部" onclick="btf.scrollToDest(document.body.scrollHeight, 500)"><i class="fas fa-arrow-down"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><div class="js-pjax"><script>function loadValine () {
+  function initValine () {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'ywGdOzKYJdZRkK4pXKBZmSZV-gzGzoHsz',
+      appKey: '0sGGpecKPvyhGbBl4Emx8mxc',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js').then(initValine)
+}
+
+if ('Valine' === 'Valine' || !true) {
+  if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
+  else setTimeout(loadValine, 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script></div><script async src="//npm.elemecdn.com/pace-js@1.2.4/pace.min.js"></script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="true"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div><!-- hexo injector body_end start --><script data-pjax>
+    function butterfly_categories_card_injector_config(){
+      var parent_div_git = document.getElementById('recent-posts');
+      var item_html = '<style>li.categoryBar-list-item{width:24%;}.categoryBar-list{max-height: 190px;overflow:auto;}.categoryBar-list::-webkit-scrollbar{width:0!important}@media screen and (max-width: 650px){.categoryBar-list{max-height: 160px;}}</style><div class="recent-post-item" style="height:auto;width:100%;padding:0px;"><div id="categoryBar"><ul class="categoryBar-list"><li class="categoryBar-list-item" style="background:url(https://blog-ww.oss-cn-hangzhou.aliyuncs.com/2023/03/07/c477e45dc4914f04afe50cb015b724cb.jpg/wallHaven.jpg);"> <a class="categoryBar-list-link" href="categories/Java/">Java</a><span class="categoryBar-list-count">1</span><span class="categoryBar-list-descr">MySQL</span></li><li class="categoryBar-list-item" style="background:url(https://blog-ww.oss-cn-hangzhou.aliyuncs.com/2023/03/07/c477e45dc4914f04afe50cb015b724cb.jpg/wallhaven-kx7mkm.jpg);"> <a class="categoryBar-list-link" href="categories/MyBatis-Plus/">MyBatis-Plus</a><span class="categoryBar-list-count">5</span><span class="categoryBar-list-descr">MyBatis</span></li><li class="categoryBar-list-item" style="background:url(https://blog-ww.oss-cn-hangzhou.aliyuncs.com/2023/03/07/c477e45dc4914f04afe50cb015b724cb.jpg/wallhaven-we5jlx.png);"> <a class="categoryBar-list-link" href="categories/MyBatis/">MyBatis</a><span class="categoryBar-list-count">1</span><span class="categoryBar-list-descr">Redis</span></li><li class="categoryBar-list-item" style="background:url(https://blog-ww.oss-cn-hangzhou.aliyuncs.com/2023/03/07/c477e45dc4914f04afe50cb015b724cb.jpg/wallhaven-x6655d.png);"> <a class="categoryBar-list-link" href="categories/Redis/">Redis</a><span class="categoryBar-list-count">4</span><span class="categoryBar-list-descr">MyBatis-Plus</span></li><li class="categoryBar-list-item" style="background:url(undefined);"> <a class="categoryBar-list-link" href="categories/MySQL/">MySQL</a><span class="categoryBar-list-count">2</span><span class="categoryBar-list-descr"></span></li></ul></div></div>';
+      console.log('已挂载butterfly_categories_card')
+      parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+      }
+    if( document.getElementById('recent-posts') && (location.pathname ==='/'|| '/' ==='all')){
+    butterfly_categories_card_injector_config()
+    }
+  </script><script data-pjax>
+  function butterfly_clock_anzhiyu_injector_config(){
+    var parent_div_git = document.getElementsByClassName('sticky_layout')[0];
+    var item_html = '<div class="card-widget card-clock"><div class="card-glass"><div class="card-background"><div class="card-content"><div id="hexo_electric_clock"><img class="entered loading" id="card-clock-loading" src="/img/loading.gif" data-original="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/loading.gif" style="height: 120px; width: 100%;" data-ll-status="loading"/></div></div></div></div></div>';
+    console.log('已挂载butterfly_clock_anzhiyu')
+    if(parent_div_git) {
+      parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = 'all';
+  var qweather_key = 'b16a1fa0e63c46a4b8f28abfb06ae3fe';
+  var gaud_map_key = 'e2b04289e870b005374ee030148d64fd&s=rsv3';
+  var baidu_ak_key = 'undefined';
+  var flag = 0;
+  var clock_rectangle = '112.982279,28.19409';
+  var clock_default_rectangle_enable = 'false';
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_clock_anzhiyu_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_clock_anzhiyu_injector_config();
+  }
+  </script><script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script><script data-pjax src="https://cdn.cbd.int/hexo-butterfly-clock-anzhiyu/lib/clock.min.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('recent-post-item');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__backInLeft');
+    arr[i].setAttribute('data-wow-duration', '700ms');
+    arr[i].setAttribute('data-wow-delay', '700ms');
+    arr[i].setAttribute('data-wow-offset', '100');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script><script async="async">var arr = document.getElementsByClassName('card-widget');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__backInRight');
+    arr[i].setAttribute('data-wow-duration', '');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('pagination');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__fadeInUp');
+    arr[i].setAttribute('data-wow-duration', '');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script></div><script defer src="https://npm.elemecdn.com/hexo-butterfly-wowjs/lib/wow.min.js"></script><script defer src="https://npm.elemecdn.com/hexo-butterfly-wowjs/lib/wow_init.js"></script><script data-pjax>
+  function butterfly_swiper_injector_config(){
+    var parent_div_git = document.getElementById('recent-posts');
+    var item_html = '<div class="recent-post-item" style="height: auto;width: 100%"><div class="blog-slider swiper-container-fade swiper-container-horizontal" id="swiper_container"><div class="blog-slider__wrp swiper-wrapper" style="transition-duration: 0ms;"><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2023/03/08/分布式锁/" alt=""><img width="48" height="48" src="/img/loading.gif" data-original="https://blog-ww.oss-cn-hangzhou.aliyuncs.com/2023/03/07/c477e45dc4914f04afe50cb015b724cb.jpg/kq.jpg" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2023-03-08</span><a class="blog-slider__title" href="2023/03/08/分布式锁/" alt="">基于Redis实现分布式锁</a><div class="blog-slider__text">使用Redis实现分布式锁</div><a class="blog-slider__button" href="2023/03/08/分布式锁/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2023/03/08/持久化/" alt=""><img width="48" height="48" src="/img/loading.gif" data-original="https://blog-ww.oss-cn-hangzhou.aliyuncs.com/2023/03/07/c477e45dc4914f04afe50cb015b724cb.jpg/Snipaste_2023-01-11_21-32-42.jpg" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2023-03-08</span><a class="blog-slider__title" href="2023/03/08/持久化/" alt="">Redis持久化</a><div class="blog-slider__text">Redis持久化原理，RDB、AOF</div><a class="blog-slider__button" href="2023/03/08/持久化/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2023/03/08/缓存/" alt=""><img width="48" height="48" src="/img/loading.gif" data-original="https://blog-ww.oss-cn-hangzhou.aliyuncs.com/2023/03/07/c477e45dc4914f04afe50cb015b724cb.jpg/6.jpg" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2023-03-08</span><a class="blog-slider__title" href="2023/03/08/缓存/" alt="">Redis缓存机制</a><div class="blog-slider__text">Redis缓存机制，缓存击穿、缓存穿透、缓存雪崩等解决方案</div><a class="blog-slider__button" href="2023/03/08/缓存/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2023/03/08/MySQL基础/" alt=""><img width="48" height="48" src="/img/loading.gif" data-original="https://blog-ww.oss-cn-hangzhou.aliyuncs.com/2023/03/07/c477e45dc4914f04afe50cb015b724cb.jpg/wallhaven-2yeydm.png" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2023-03-08</span><a class="blog-slider__title" href="2023/03/08/MySQL基础/" alt="">MySQL基础</a><div class="blog-slider__text">MySQL基础知识，包含基本SQL语句、函数、约束、事务、多表联查等</div><a class="blog-slider__button" href="2023/03/08/MySQL基础/" alt="">详情   </a></div></div></div><div class="blog-slider__pagination swiper-pagination-clickable swiper-pagination-bullets"></div></div></div>';
+    console.log('已挂载butterfly_swiper')
+    parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  var elist = 'undefined'.split(',');
+  var cpage = location.pathname;
+  var epage = 'all';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_swiper_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_swiper_injector_config();
+  }
+  </script><script defer src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.js"></script><script defer data-pjax src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper_init.js"></script><!-- hexo injector body_end end --><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"left","width":250,"height":300},"mobile":{"show":false},"log":false});</script>
+        <style>
+            [bg-lazy] {
+                background-image: none !important;
+                background-color: #eee !important;
+            }
+        </style>
+        <script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(r){r.imageLazyLoadSetting.processImages=t;var e=r.imageLazyLoadSetting.isSPA,n=r.imageLazyLoadSetting.preloadRatio||1,c=a();function a(){var t=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")),e=Array.prototype.slice.call(document.querySelectorAll("[bg-lazy]"));return t.concat(e)}function t(){e&&(c=a());for(var t,o=0;o<c.length;o++)0<=(t=(t=c[o]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(r.innerHeight*n||document.documentElement.clientHeight*n)&&function(){var t,e,n,a,i=c[o];e=function(){c=c.filter(function(t){return i!==t}),r.imageLazyLoadSetting.onImageLoaded&&r.imageLazyLoadSetting.onImageLoaded(i)},(t=i).hasAttribute("bg-lazy")?(t.removeAttribute("bg-lazy"),e&&e()):(n=new Image,a=t.getAttribute("data-original"),n.onload=function(){t.src=a,t.removeAttribute("data-original"),e&&e()},t.src!==a&&(n.src=a))}()}function i(){clearTimeout(t.tId),t.tId=setTimeout(t,500)}t(),document.addEventListener("scroll",i),r.addEventListener("resize",i),r.addEventListener("orientationchange",i)}(this);</script></body></html>
