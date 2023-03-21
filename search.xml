@@ -82,9 +82,9 @@
             
             <tag> 微服务 </tag>
             
-            <tag> SpringCloud </tag>
-            
             <tag> Feign </tag>
+            
+            <tag> SpringCloud </tag>
             
             <tag> 服务调用 </tag>
             
@@ -198,9 +198,9 @@
             
             <tag> 微服务 </tag>
             
-            <tag> 注册中心 </tag>
-            
             <tag> SpringCloud </tag>
+            
+            <tag> 注册中心 </tag>
             
         </tags>
       
@@ -227,9 +227,9 @@
             
             <tag> 微服务 </tag>
             
-            <tag> 注册中心 </tag>
-            
             <tag> SpringCloud </tag>
+            
+            <tag> 注册中心 </tag>
             
         </tags>
       
