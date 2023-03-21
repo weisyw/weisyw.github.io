@@ -82,9 +82,9 @@
             
             <tag> 微服务 </tag>
             
-            <tag> Feign </tag>
-            
             <tag> SpringCloud </tag>
+            
+            <tag> Feign </tag>
             
             <tag> 服务调用 </tag>
             
@@ -198,9 +198,9 @@
             
             <tag> 微服务 </tag>
             
-            <tag> SpringCloud </tag>
-            
             <tag> 注册中心 </tag>
+            
+            <tag> SpringCloud </tag>
             
         </tags>
       
@@ -227,9 +227,9 @@
             
             <tag> 微服务 </tag>
             
-            <tag> SpringCloud </tag>
-            
             <tag> 注册中心 </tag>
+            
+            <tag> SpringCloud </tag>
             
         </tags>
       
@@ -709,8 +709,6 @@
       
         <tags>
             
-            <tag> 锁 </tag>
-            
             <tag> 分布式 </tag>
             
             <tag> Redis </tag>
@@ -718,6 +716,8 @@
             <tag> 高性能 </tag>
             
             <tag> 高可用 </tag>
+            
+            <tag> 锁 </tag>
             
             <tag> Redisson </tag>
             
